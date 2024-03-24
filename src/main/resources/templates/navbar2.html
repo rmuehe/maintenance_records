@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Navigation Bar</title>
+        <!-- Bootstrap CSS (Dark Theme) -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-DhY6onE6f3ZojRVZ0kB0oZV9Zqca/c6Q4u55lyY1iMdeVwrF7qBsg6zO5g6ka6s4" crossorigin="anonymous">
+    </head>
+    <body>
+        <div th:fragment="navbar">
+            <!-- Navigation Bar -->
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="/" th:href="@{/}">
+                        <img src="../static/images/black_file_cabinet_logo.png" alt="Logo" width="30" height="24" class="d-inline-block align-top">
+                        Maintenance Records
+                    </a>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/items}" th:if="${isAuthenticated}">Items</a>
+                            </li>
+                        </ul>
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item" th:if="${!isAuthenticated}">
+                                <a class="nav-link" th:href="@{/login}">Login</a>
+                            </li>
+                            <li class="nav-item" th:if="${!isAuthenticated}">
+                                <a class="nav-link" th:href="@{/register}">Register</a>
+                            </li>
+                            <li class="nav-item" th:if="${isAuthenticated}">
+                                <span class="navbar-text" th:text="${userName}"></span>
+                                <a class="nav-link" th:href="@{/logout}">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Your page's content should go here -->
+        <div class="container mt-4">
+            <div th:replace="${content}"></div>
+        </div>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js" integrity="sha384-MtQFIDc/OtvF8XroMUtMFGJ7BCBf4kBS39R02ibK3JJnUnGAvDPO9I62IpVd8K7I" crossorigin="anonymous"></script>
+    </body>
+</html>
