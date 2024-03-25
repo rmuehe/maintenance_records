@@ -1,0 +1,26 @@
+/* Dark theme customizations */
+body {
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0; /* Light text */
+}
+
+/*  link colors for better visibility */
+a {
+    color: #bb86fc;
+}
+
+/* Style for tables */
+.table-dark {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+.table-dark th,
+.table-dark td {
+    border-color: #343a40;
+}
+
+/* Buttons  */
+.btn-primary, .btn-secondary {
+    border: 0;
+}
