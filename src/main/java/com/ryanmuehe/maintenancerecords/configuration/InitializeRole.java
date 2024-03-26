@@ -7,6 +7,11 @@ import com.ryanmuehe.maintenancerecords.model.Role;
 import com.ryanmuehe.maintenancerecords.model.repository.RoleRepository;
 
 @Component // Marks class for component scanning
+/**
+* Every time the application starts, Roles are persisted to database if not present
+ * since some pages require authorization through Roles
+ * and Roles are not created or changed through the website
+* */
 public class InitializeRole implements CommandLineRunner {
 
     @Autowired

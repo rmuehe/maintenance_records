@@ -26,6 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @Configuration //  class marked as a configuration component
 @EnableWebSecurity // enable Spring Security's web security
+// Provides essential cross-page authentication and authorization configuration and methods
 public class SecurityConfig {
 
     @Autowired // Injects a custom UserDetailsService for retrieving UserDetails during authentication
@@ -54,7 +55,7 @@ public class SecurityConfig {
                         // Specifies public access to certain URLs
                         .requestMatchers("/", "/index/**", "/register", "/login/**", "/webjars/**", "/css/**", "/js/**", "/images/**").permitAll()
                         // Specifies access control for /home based on roles.
-                        .requestMatchers("/home").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/items").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         // Requires authentication for any other request.
                         .anyRequest().authenticated()
                 )
@@ -65,7 +66,7 @@ public class SecurityConfig {
                         .usernameParameter("username")
                         .passwordParameter("password")
 //                        .successForwardUrl("/home") // accepts a POST after login
-                        .defaultSuccessUrl("/home", true) // accepts a GET after login
+                        .defaultSuccessUrl("/items", true) // accepts a GET after login
                         .permitAll()
                 )
                 .logout(logout -> logout

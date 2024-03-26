@@ -5,6 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+// Role Data Transfer Object
 public class RoleDTO {
 
     private String name;

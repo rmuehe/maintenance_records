@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
  * @see <a href="https://github.com/igoradulian/SpringDemoExamples/blob/Spring-Security/src/main/java/com/learning/demo/service/UserServiceImpl.java">UserServiceImpl by Igor Adulyan</a>
  */
 @Service // class marked as a Spring service component.
+// handles the business logic of Users
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;

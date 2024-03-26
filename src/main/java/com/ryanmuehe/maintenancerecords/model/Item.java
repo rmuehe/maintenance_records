@@ -23,7 +23,7 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // auto-increment
     private Long id;
 
-    @Column
+    @Column (nullable = false)
     private String name;
 
     @Column(columnDefinition = "longtext") // allows for longblob size in DB

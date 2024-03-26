@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 
     @Service
+    // handles business logic of Registration
     public class RegisterServiceImpl implements RegisterService {
         private final UserRepository userRepository;
         private final RoleRepository roleRepository;

@@ -4,6 +4,31 @@ body {
     color: #e0e0e0; /* Light text */
 }
 
+body.bg-dark {
+    background-color: #343a40
+}
+
+body.bg-dark .form-control {
+    background-color: #495057;
+    color: #fff;
+}
+
+body.bg-dark label {
+    color: #fff;
+}
+
+body.bg-dark .btn-light {
+    color: #343a40;
+    background-color: #f8f9fa;
+    border-color: #f8f9fa;
+}
+
+body.bg-dark .btn-light:hover {
+    color: #fff;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+}
+
 /*  link colors for better visibility */
 a {
     color: #bb86fc;

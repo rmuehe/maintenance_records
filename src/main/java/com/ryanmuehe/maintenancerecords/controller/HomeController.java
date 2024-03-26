@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller // marks the class as a controller
+/**
+ * listens for home page related routes
+ * */
 public class HomeController {
 
     @GetMapping("/") // GET request to the root URL
@@ -14,7 +17,7 @@ public class HomeController {
         return "index"; // opens the landing page: index.html
     }
 
-    @GetMapping("/index")
+    @GetMapping("/index") // GET request to root after logging out
     public String index(
             @RequestParam(value = "logout", required = false) String logout,
             Model model) {

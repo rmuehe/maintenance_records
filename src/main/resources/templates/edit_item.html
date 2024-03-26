@@ -1,10 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>Maintenance Records Edit Item</title>
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/css/app.css}" rel="stylesheet" />
+    <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}" defer></script>
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
-<body>
-$END$
+<body class="bg-dark text-light">
+
+<div th:replace="~{navbar :: navbar}"></div>
+
+<div class="container mt-4 text-white">
+    <h2>Edit Item</h2>
+    <form th:action="@{/items/edit}" th:object="${item}" method="post">
+        <div class="mb-3">
+            <label for="itemName" class="form-label">Item Name</label>
+            <input type="text" class="form-control bg-secondary text-white" id="itemName" th:field="*{name}" required>
+        </div>
+        <div class="mb-3">
+            <label for="itemDescription" class="form-label">Description</label>
+            <textarea class="form-control bg-secondary text-white" id="itemDescription" th:field="*{description}" rows="3" required></textarea>
+        </div>
+        <input type="hidden" th:field="*{id}"/>
+        <button type="submit" class="btn btn-light">Update</button>
+    </form>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

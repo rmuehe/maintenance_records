@@ -1,8 +1,10 @@
 package com.ryanmuehe.maintenancerecords.model.repository;
 
 import com.ryanmuehe.maintenancerecords.model.User;
+import com.ryanmuehe.maintenancerecords.constant.QueryConstant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
 
 import java.util.Optional;
 
@@ -18,8 +20,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param email check database for email uniqueness
      * @return true only if database contains email, otherwise false
      */
-    @Query("SELECT COUNT(u) > 0 FROM User u WHERE LOWER(u.email) = LOWER(?1)")
+//    @Query("SELECT COUNT(u) > 0 FROM User u WHERE LOWER(u.email) = LOWER(?1)")
+    @Query(QueryConstant.EMAIL_EXISTS)
     Boolean emailExists(String email);
 
+    // returns an Optional User provided with an email.
+    // Optionals are hedges against NullPointerException
     Optional<User> findByEmail(String email);
 }

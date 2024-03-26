@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 
 @Controller
+    /**
+     * listens for registration URLs and replies with register pages
+     * and other registration-related actions
+     */
 public class RegisterController {
 
     // Inject RegisterService dependency into this controller
@@ -31,15 +35,11 @@ public class RegisterController {
 
 
     @PostMapping("/register") // Process the registration form
+                                // which adds a new User
     public String registerUserAccount(
             @ModelAttribute("user")
             @Valid RegisterUserDTO registerUserDTO,
             BindingResult result) {
-
-//        if (result.hasErrors()) {
-//            // If there are errors, return to the registration form.
-//            return "redirect:/register?error";
-//        }
 
         if (result.hasErrors()) {
             String errorParam = "?error=true";

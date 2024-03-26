@@ -1,10 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>Maintenance Records Items</title>
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/css/app.css}" rel="stylesheet" />
+    <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}" defer></script>
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
-$END$
+
+<div th:replace="~{navbar :: navbar}"></div>
+
+<!--Update messages  -->
+<div th:if="${updateSuccess}">
+    <div class="alert alert-success" role="alert" th:text="${updateSuccess}"></div>
+</div>
+<div th:if="${updateError}">
+    <div class="alert alert-danger" role="alert" th:text="${updateError}"></div>
+</div>
+
+<!-- Delete messages -->
+<div th:if="${deleteSuccess}">
+    <div class="alert alert-success" role="alert" th:text="${deleteSuccess}"></div>
+</div>
+<div th:if="${deleteError}">
+    <div class="alert alert-danger" role="alert" th:text="${deleteError}"></div>
+</div>
+
+
+<div class="container mt-4">
+    <h1 class="mb-4">Items</h1>
+    <!-- "Add New Item" Button -->
+    <div sec:authorize="hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')" class="mb-3">
+        <a th:href="@{/items/add}" class="btn btn-success">Add New Item</a>
+    </div>
+
+    <div th:if="${not #lists.isEmpty(items)}">
+        <table class="table table-dark">
+            <thead class="thead-dark">
+            <tr>
+                <th>Item Name</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}" th:if="${item != null}">
+                <!-- Item page from each item row        -->
+                <td>
+                    <a th:href="@{/items/{id}(id=${item.id})}" th:text="${item.name}">Item Name Placeholder</a>
+                </td>
+                <td th:text="${item.description}"></td>
+                <!-- Edit button in each item row        -->
+                <td>
+                    <a th:href="@{/items/edit/{id}(id=${item.id})}" class="btn btn-primary btn-sm">Edit</a>
+                </td>
+                <!-- Delete button in each item row        -->
+                <td>
+                    <form th:action="@{/items/delete/{id}(id=${item.id})}" method="post">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:if="${#lists.isEmpty(items)}">No items found.</div>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

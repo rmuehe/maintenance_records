@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity // DB table of the same name
+@Table(name = "\"user\"")
 @EntityListeners(AuditingEntityListener.class) // Enables automatic DateTime updates
 @Getter // lombok package defines all getter methods
 @Setter // lombok package defines all setter methods
