@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Item Usage</title>
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/css/app.css}" rel="stylesheet" />
+    <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}" defer></script>
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body class="bg-dark text-light">
+<div th:replace="~{navbar :: navbar}"></div>
+
+<div class="container mt-4">
+    <h2>Edit Item Usage</h2>
+    <form th:action="@{/itemUsages/update/{id}(id=${itemUsage.id})}" th:object="${itemUsage}" method="post">
+        <div class="mb-3">
+            <label for="itemUsedBy" class="form-label">Used By</label>
+            <input type="text" class="form-control" id="itemUsedBy" th:field="*{usedBy}" placeholder="Enter user of item" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="itemUsageStart" class="form-label">Usage Start Time</label>
+<!--            <input type="datetime-local" class="form-control" id="itemUsageStart" th:field="*{usageStart}">-->
+            <input type="datetime-local" class="form-control" id="itemUsageStart" name="usageStart" th:value="${formattedUsageStart}">
+        </div>
+
+        <div class="mb-3">
+            <label for="itemUsageEnd" class="form-label">Usage End Time</label>
+<!--            <input type="datetime-local" class="form-control" id="itemUsageEnd" th:field="*{usageEnd}">-->
+            <input type="datetime-local" class="form-control" id="itemUsageEnd" name="usageEnd" th:value="${formattedUsageEnd}">
+        </div>
+
+        <input type="hidden" th:field="*{itemId}" />
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

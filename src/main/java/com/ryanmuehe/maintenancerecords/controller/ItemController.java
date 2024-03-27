@@ -6,13 +6,12 @@ import com.ryanmuehe.maintenancerecords.model.Item;
 import com.ryanmuehe.maintenancerecords.model.User;
 import com.ryanmuehe.maintenancerecords.model.dto.AddItemDTO;
 //import com.ryanmuehe.maintenancerecords.model.dto.RegisterUserDTO;
+import com.ryanmuehe.maintenancerecords.model.dto.ItemUsageDTO;
 import com.ryanmuehe.maintenancerecords.model.dto.MaintenanceRecordDTO;
 import com.ryanmuehe.maintenancerecords.model.dto.MaintenanceRecordViewDTO;
-import com.ryanmuehe.maintenancerecords.service.AuthService;
-import com.ryanmuehe.maintenancerecords.service.ItemService;
-import com.ryanmuehe.maintenancerecords.service.MaintenanceRecordService;
-import com.ryanmuehe.maintenancerecords.service.UserService;
+import com.ryanmuehe.maintenancerecords.service.*;
 import com.ryanmuehe.maintenancerecords.service.implementation.AuthServiceImpl;
+import com.ryanmuehe.maintenancerecords.service.implementation.ItemUsageServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -42,16 +41,18 @@ public class ItemController {
 
     private final AuthService authService;
     private final MaintenanceRecordService maintenanceRecordService;
+    private final ItemUsageService itemUsageService;
 
     @Autowired
     public ItemController (ItemService itemService,
                            UserService userService,
                            AuthService authService,
-                           MaintenanceRecordService maintenanceRecordService) {
+                           MaintenanceRecordService maintenanceRecordService, ItemUsageServiceImpl itemUsageService) {
         this.itemService = itemService;
         this.userService = userService;
         this.authService = authService;
         this.maintenanceRecordService = maintenanceRecordService;
+        this.itemUsageService = itemUsageService;
     }
 
     @GetMapping("/items/add")
@@ -210,6 +211,11 @@ public class ItemController {
         List<MaintenanceRecordViewDTO> maintenanceRecords = maintenanceRecordService.findMaintenanceRecordsForViewByItemId(id);
         model.addAttribute("item", item);
         model.addAttribute("maintenanceRecords", maintenanceRecords);
+
+        // added after Item Usage update
+        List<ItemUsageDTO> itemUsages = itemUsageService.findItemUsagesByItemId(id);
+        model.addAttribute("item", item);
+        model.addAttribute("itemUsages", itemUsages);
 
 
 //        model.addAttribute("item", item);

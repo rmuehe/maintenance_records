@@ -16,6 +16,10 @@
     <p th:text="${errorMessage}"></p>
 </div>
 
+<div th:if="${error}">
+    <div class="alert alert-danger" role="alert" th:text="${error}"></div>
+</div>
+
 <!--Update messages  -->
 <div th:if="${updateSuccess}">
     <div class="alert alert-success" role="alert" th:text="${updateSuccess}"></div>

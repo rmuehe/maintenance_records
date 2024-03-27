@@ -17,19 +17,7 @@
       <label for="maintenanceDescription" class="form-label">Description</label>
       <textarea class="form-control" id="maintenanceDescription" name="description" rows="3" placeholder="Enter maintenance description" required></textarea>
     </div>
-    <!-- Optional: to link the record to an item -->
-<!--    <div class="mb-3">-->
-<!--      <label for="itemId" class="form-label">Item</label>-->
-<!--      <select class="form-control" id="itemId" name="itemId">-->
-<!--        <option value="">Select Item (Optional)</option>-->
-<!--        <option th:each="item : ${items}" th:value="${item.id}" th:text="${item.name}">Item1</option>-->
-<!--      </select>-->
-<!--    </div>-->
-
-<!--        <input type="hidden" name="itemId" th:value="${item.id}" />-->
     <input type="hidden" name="itemId" th:value="${maintenanceRecord.itemId}" />
-
-<!--    <input type="hidden" th:field="*{itemId}" />-->
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 </div>

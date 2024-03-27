@@ -47,7 +47,7 @@ public class MaintenanceRecordServiceImpl implements MaintenanceRecordService {
             record = maintenanceRecordRepository.findById(maintenanceRecordDTO.getId())
                             .orElseThrow(() -> new EntityNotFoundException("Maintenance Record not found"));
             record.setLastUpdated(LocalDateTime.now());
-        } else {
+        } else { // if the DTO is new
             record = new MaintenanceRecord();
             Item item = itemService.findById(maintenanceRecordDTO.getItemId());
             record.setItem(item);
