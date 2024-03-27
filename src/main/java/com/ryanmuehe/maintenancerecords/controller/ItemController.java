@@ -6,8 +6,13 @@ import com.ryanmuehe.maintenancerecords.model.Item;
 import com.ryanmuehe.maintenancerecords.model.User;
 import com.ryanmuehe.maintenancerecords.model.dto.AddItemDTO;
 //import com.ryanmuehe.maintenancerecords.model.dto.RegisterUserDTO;
+import com.ryanmuehe.maintenancerecords.model.dto.MaintenanceRecordDTO;
+import com.ryanmuehe.maintenancerecords.model.dto.MaintenanceRecordViewDTO;
+import com.ryanmuehe.maintenancerecords.service.AuthService;
 import com.ryanmuehe.maintenancerecords.service.ItemService;
+import com.ryanmuehe.maintenancerecords.service.MaintenanceRecordService;
 import com.ryanmuehe.maintenancerecords.service.UserService;
+import com.ryanmuehe.maintenancerecords.service.implementation.AuthServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,6 +26,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 //import java.constant.Set;
 
 @Controller
@@ -33,10 +40,18 @@ public class ItemController {
     private final ItemService itemService;
     private final UserService userService;
 
+    private final AuthService authService;
+    private final MaintenanceRecordService maintenanceRecordService;
+
     @Autowired
-    public ItemController (ItemService itemService, UserService userService) {
+    public ItemController (ItemService itemService,
+                           UserService userService,
+                           AuthService authService,
+                           MaintenanceRecordService maintenanceRecordService) {
         this.itemService = itemService;
         this.userService = userService;
+        this.authService = authService;
+        this.maintenanceRecordService = maintenanceRecordService;
     }
 
     @GetMapping("/items/add")
@@ -163,4 +178,88 @@ public class ItemController {
         }
         return "redirect:/items";
     }
+
+
+//    @Autowired
+//    private AuthServiceImpl authService;
+
+    @GetMapping("/items/{id}")
+    public String getItemDetails(
+            @PathVariable Long id,
+            Model model,
+            Authentication authentication, RedirectAttributes redirectAttributes) {
+
+        Item item = itemService.findById(id);
+
+        // Check if the item exists and has an owner
+        if (item == null || item.getOwner() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "The requested item does not exist or is not accessible.");
+            return "redirect:/items";
+        }
+
+//        if (item == null) {
+//            return "redirect:/items?error=ItemNotFound";
+//        }
+
+        if (!authService.isOwner(item.getOwner(), authentication)
+                && !authService.isAdmin(authentication)) {
+            return "redirect:/items?error=unauthorizedAccess";
+        }
+
+        // added after MR update
+        List<MaintenanceRecordViewDTO> maintenanceRecords = maintenanceRecordService.findMaintenanceRecordsForViewByItemId(id);
+        model.addAttribute("item", item);
+        model.addAttribute("maintenanceRecords", maintenanceRecords);
+
+
+//        model.addAttribute("item", item);
+        // Add itemUsages and maintenanceRecords to the model here
+        return "item";
+    }
+
+
+
+//    @GetMapping("/items/{id}")
+//    public String getItemDetails(@PathVariable Long id, Model model, Authentication authentication) {
+//        // Fetching the item from the database
+//        Item item = itemService.findById(id);
+//        if (item == null) {
+//            return "redirect:/items?error=ItemNotFound";
+//        }
+//
+//        // Authentication and authorization logic
+//        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+//        User currentUser = userService.findUserByEmail(userDetails.getUsername());
+////        boolean isOwner = item.getOwner().equals(currentUser);
+////        boolean isAdmin = userDetails.getAuthorities().stream()
+////                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+//
+//        // Redirecting if the user is neither the owner nor an admin
+//        if (!authService.isOwner(currentUser, authentication) && !authService.isAdmin(authentication)) {
+//            return "redirect:/items?error=unauthorizedAccess";
+//        }
+//
+//        // Proceeding with adding attributes to the model if authorized
+//        model.addAttribute("item", item);
+//        // Assume similar logic for adding itemUsages and maintenanceRecords to the model
+//        return "item";
+//    }
+
+
+//    @GetMapping("/items/{id}")
+//    public String getItemDetails(@PathVariable Long id, Model model) {
+//        Item item = itemService.findById(id);
+//        if (item == null) {
+//            return "redirect:/items?error=ItemNotFound";
+//        }
+//
+////        List<ItemUsage> itemUsages = itemUsageService.findUsagesByItemId(id);
+////        List<MaintenanceRecord> maintenanceRecords = maintenanceRecordService.findRecordsByItemId(id);
+//
+//        model.addAttribute("item", item);
+////        model.addAttribute("itemUsages", itemUsages);
+////        model.addAttribute("maintenanceRecords", maintenanceRecords);
+//
+//        return "item";
+//    }
 }

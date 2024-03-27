@@ -11,6 +11,27 @@
 
 <div th:replace="~{navbar :: navbar}"></div>
 
+<!-- Error message for pages not found (usually by User mistakenly manipulating URL) -->
+<div th:if="${not #strings.isEmpty(message)}" class="alert alert-danger">
+    <p th:text="${message}"></p>
+</div>
+
+<!--Update messages  -->
+<div th:if="${success}">
+    <div class="alert alert-success" role="alert" th:text="${success}"></div>
+</div>
+<div th:if="${error}">
+    <div class="alert alert-danger" role="alert" th:text="${error}"></div>
+</div>
+
+<!-- Delete messages -->
+<div th:if="${deleteSuccess}">
+    <div class="alert alert-success" role="alert" th:text="${deleteSuccess}"></div>
+</div>
+<div th:if="${deleteError}">
+    <div class="alert alert-danger" role="alert" th:text="${deleteError}"></div>
+</div>
+
 <div class="container mt-4">
     <h2>Item Details</h2>
     <div>
@@ -22,7 +43,8 @@
         <div class="row">
             <div class="col-md-6">
                 <h3>Item Usages</h3>
-                <a th:href="@{'/itemUsages/add?itemId=' + ${item.id}}" class="btn btn-primary mb-3">Add Item Usage</a>
+<!--                <a th:href="@{'/itemUsages/add?itemId=' + ${item.id}}" class="btn btn-primary mb-3">Add Item Usage</a>-->
+                <a th:href="@{/itemUsages/add(itemId=${item.id})}" class="btn btn-primary mb-3">Add Item Usage</a>
                 <div th:if="${not #lists.isEmpty(itemUsages)}">
                     <table class="table table-hover">
                         <thead class="thead-dark">
@@ -56,6 +78,7 @@
             <div class="col-md-6">
                 <h3>Maintenance Records</h3>
                 <a th:href="@{'/maintenanceRecords/add?itemId=' + ${item.id}}" class="btn btn-primary mb-3">Add Maintenance Record</a>
+
                 <div th:if="${not #lists.isEmpty(maintenanceRecords)}" class="mt-3">
                     <table class="table table-hover">
                         <thead class="thead-dark">
@@ -69,12 +92,14 @@
                         <tr th:each="record : ${maintenanceRecords}">
                             <td th:text="${#strings.abbreviate(record.description, 50)}"></td>
                             <td th:text="${#temporals.format(record.lastUpdated, 'yyyy-MM-dd')}"></td>
+
                             <td>
-                                <a th:href="@{/maintenanceRecords/edit/{id}(id=${record.id})}" class="btn btn-info btn-sm">Edit</a>
+                                <a th:href="@{/maintenanceRecords/update/{id}(id=${record.id})}" class="btn btn-info btn-sm">Edit</a>
                                 <form th:action="@{/maintenanceRecords/delete/{id}(id=${record.id})}" method="post" class="d-inline">
                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                 </form>
                             </td>
+
                         </tr>
                         </tbody>
                     </table>

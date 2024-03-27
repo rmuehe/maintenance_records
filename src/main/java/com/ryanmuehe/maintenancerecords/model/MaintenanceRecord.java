@@ -22,7 +22,7 @@ public class MaintenanceRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // auto-increment
     private Long id;
 
-    @Column(columnDefinition = "longtext") // allows for longblob size in DB
+    @Column(columnDefinition = "longtext", nullable = false) // allows for longblob size in DB
     private String description; // record of the state of the item
 
     // Many Maintenance Records can be associated with one item

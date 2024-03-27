@@ -11,6 +11,11 @@
 
 <div th:replace="~{navbar :: navbar}"></div>
 
+<!-- Error message for pages not found (usually by User mistakenly manipulating URL) -->
+<div th:if="${not #strings.isEmpty(errorMessage)}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+</div>
+
 <!--Update messages  -->
 <div th:if="${updateSuccess}">
     <div class="alert alert-success" role="alert" th:text="${updateSuccess}"></div>

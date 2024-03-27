@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Update Maintenance Record</title>
+    <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/css/app.css}" rel="stylesheet" />
+    <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}" defer></script>
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body class="bg-dark text-light">
+<div th:replace="~{navbar :: navbar}"></div>
+
+<div class="container mt-4">
+    <h2>Update Maintenance Record</h2>
+    <!-- Update the form action to point to the update handler, including the record's ID -->
+    <form th:action="@{/maintenanceRecords/update/{id}(id=${maintenanceRecord.id})}" th:object="${maintenanceRecord}" method="post">
+        <div class="mb-3">
+            <label for="maintenanceDescription" class="form-label">Description</label>
+            <!-- Pre-populate the textarea with the current description -->
+            <textarea class="form-control" id="maintenanceDescription" name="description" rows="3" th:text="${maintenanceRecord.description}" required></textarea>
+        </div>
+
+        <!-- Include the record's ID as a hidden field to identify which record is being updated -->
+        <input type="hidden" name="id" th:value="${maintenanceRecord.id}" />
+        <!-- Include the record's item ID as a hidden field to maintain access to item relationship -->
+        <input type="hidden" name="itemId" th:value="${maintenanceRecord.itemId}" />
+
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
