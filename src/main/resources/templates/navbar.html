@@ -25,6 +25,24 @@
                 <span th:text="${#authentication.getName()}"></span> <!-- Adjusted to display name/email -->
             </div>
 
+            <!-- User page : items.html -->
+            <div sec:authorize="hasRole('ROLE_USER')" class="ms-auto"> <!-- ms-auto class to push to the right -->
+                <form th:action="@{/items}" method="post" class="ms-auto"> <!-- ms-auto class to push to the right -->
+                    <input type="submit" value="Items" class="btn btn-outline-secondary">
+                </form>
+                <!--                link version of this Items button -->
+                <!--                <a class="" href="/items">Items</a>-->
+            </div>
+
+            <!-- Admin Portal to users.html -->
+            <div sec:authorize="hasRole('ROLE_ADMIN')" class="ms-auto"> <!-- ms-auto class to push to the right -->
+                <form th:action="@{/users}" method="post" class="ms-auto"> <!-- ms-auto class to push to the right -->
+                    <input type="submit" value="Users" class="btn btn-outline-secondary">
+                </form>
+                    <!--                link version of this Users button -->
+                    <!--                <a class="" href="/users">Users</a>-->
+            </div>
+
             <!-- Logout Button -->
             <form th:action="@{/logout}" method="post" class="ms-auto"> <!-- ms-auto class to push to the right -->
                 <input type="submit" value="Logout" class="btn btn-outline-secondary">

@@ -120,6 +120,9 @@ public class ItemUsageController {
         ItemUsageDTO usageDTO = itemUsageService.convertToDTO(itemUsage);
 
 
+        /**
+         * If prefer to set null usageStart and UsageEnd to ItemUsage.createdBy and LocalDateTime.now()
+         * */
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         if (usageDTO.getUsageStart() != null) {
             model.addAttribute("formattedUsageStart", usageDTO.getUsageStart().format(formatter));
@@ -132,6 +135,17 @@ public class ItemUsageController {
         } else {
             model.addAttribute("formattedUsageEnd", LocalDateTime.now().format(formatter));
         }
+
+        /**
+         * If prefer to set usageStart and usageEnd times back to null when updating
+         * Prevents a NullPointerException
+         */
+//        model.addAttribute("formattedUsageStart", Optional.ofNullable(usageDTO.getUsageStart())
+//                .map(start -> start.format(formatter)).orElse(""));
+//        model.addAttribute("formattedUsageEnd", Optional.ofNullable(usageDTO.getUsageEnd())
+//                .map(end -> end.format(formatter)).orElse(""));
+
+
 
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 //        model.addAttribute("formattedUsageStart", usageDTO.getUsageStart().format(formatter));
@@ -178,88 +192,7 @@ public class ItemUsageController {
     }
 
 
- /*
-    // listens for call to Maintenance Record update page and provides, if permitted
-    @GetMapping("/maintenanceRecords/update/{id}")
-    // TODO: make the Unauthorized messages work - may require update to HTML
-    public String showUpdateMaintenanceRecordForm(@PathVariable("id") Long id, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
-        MaintenanceRecord maintenanceRecord = maintenanceRecordService.findById(id);
-        if (maintenanceRecord == null) {
-            redirectAttributes.addFlashAttribute("error", "Maintenance record not found.");
-            return "redirect:/items";
-        }
 
-        User itemOwner = maintenanceRecord.getItem().getOwner();
-        if (!authService.isOwner(itemOwner, authentication) && !authService.isAdmin(authentication)) {
-            redirectAttributes.addFlashAttribute("error", "Unauthorized access to update this maintenance record.");
-            return "redirect:/items?error=unauthorizedAccess";
-        }
-
-        MaintenanceRecordDTO mrDTO = maintenanceRecordService.convertToMRecordDTO(maintenanceRecord);
-        model.addAttribute("maintenanceRecord", mrDTO); // Maybe should convert to DTO
-        return "update_maintenance_record";
-    }
-
-    @PostMapping("/maintenanceRecords/update/{id}")
-    public String updateMaintenanceRecord(
-            @PathVariable Long id,
-            @ModelAttribute("maintenanceRecord") @Valid MaintenanceRecordDTO maintenanceRecordDTO,
-            BindingResult result,
-            RedirectAttributes redirectAttributes,
-            Authentication authentication) {
-
-        System.out.println("Starting update operation"); // Debugging start
-        System.out.println("DTO received: " + maintenanceRecordDTO); // Print DTO received
-
-        if (result.hasErrors()) {
-            // If validation errors, redirect back to the update form
-//            return "update_maintenance_record";
-
-            System.out.println("Form has errors."); // Check if there are form errors
-            List<ObjectError> errors = result.getAllErrors();
-            for (ObjectError error : errors) {
-                System.out.println(error.getDefaultMessage()); // Print each error message
-            }
-            return "redirect:/maintenanceRecords/update/" + id;
-        }
-        System.out.println("Fetching existing record with ID: " + id); // Print the ID being used to fetch
-        MaintenanceRecord existingRecord = maintenanceRecordService.findById(id);
-        if (existingRecord == null) {
-            System.out.println("Record not found with ID: " + id); // Record not found
-            redirectAttributes.addFlashAttribute("error", "Maintenance Record not found.");
-            return "redirect:/items";
-        }
-        // check if the URL item number is the same as the DTO item id
-        else if (!Objects.equals(existingRecord.getItem().getId(), maintenanceRecordDTO.getItemId())) {
-            redirectAttributes.addFlashAttribute("error", "Maintenance Record not found.");
-            return "redirect:/items";
-        }
-
-        System.out.println("Record found. Checking authorization."); // Proceed to authorization check
-        // Authorization check
-        if (!authService.isOwner(existingRecord.getItem().getOwner(), authentication) && !authService.isAdmin(authentication)) {
-            System.out.println("User unauthorized to update record."); // Unauthorized access
-            redirectAttributes.addFlashAttribute("error", "Unauthorized to update this maintenance record.");
-            return "redirect:/items?error=unauthorizedAccess";
-        }
-
-        // Update the Maintenance Record
-//        existingRecord.setDescription(maintenanceRecordDTO.getDescription());
-
-        System.out.println("User authorized. Updating record."); // Authorized to update
-        // Update logic here
-        // The item association, etc. should remain unchanged
-        maintenanceRecordService.addMaintenanceRecord(maintenanceRecordDTO);
-
-        redirectAttributes.addFlashAttribute("success", "Maintenance record updated successfully.");
-//        return "redirect:/items/" + existingRecord.getItem().getId(); // Redirect to the item detail page
-
-        System.out.println("Record updated. Redirecting."); // Confirming redirection
-        return "redirect:/items/" + maintenanceRecordDTO.getItemId();
-
-    }
-
-*/
     // Deletes Item Usages when permitted
     @PostMapping("/itemUsages/delete/{id}")
     public String deleteMaintenanceRecord(

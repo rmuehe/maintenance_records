@@ -12,10 +12,10 @@ import java.util.Optional;
  * Manages operations for User entities.
  */
 public interface UserRepository extends JpaRepository<User, Long> {
-
+    // Inherits CRUD methods like save(), findById(), findAll(), deleteById()
     /**
-     * Checks if a user with the specified email exists, case-insensitively.
-     * This method supports ensuring unique email addresses during registration.
+     * Checks if a user with an email exists, case-insensitively
+     * Ensures unique email addresses during registration
      *
      * @param email check database for email uniqueness
      * @return true only if database contains email, otherwise false

@@ -48,7 +48,8 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime lastUpdated;
 
-    @OneToMany(mappedBy = "user") // relationship to a 'user' source in RoleAssignment
+    // TODO: review this delete cascade when upgrading to disabling logic.
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // relationship to a 'user' source in RoleAssignment
     private Set<RoleAssignment> roleAssignments = new HashSet<>(); // each user may have many roleAssignments
 
 }

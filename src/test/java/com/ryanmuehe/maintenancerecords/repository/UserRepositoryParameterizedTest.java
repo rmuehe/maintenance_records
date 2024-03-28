@@ -4,26 +4,32 @@ import com.ryanmuehe.maintenancerecords.model.User;
 import com.ryanmuehe.maintenancerecords.model.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDateTime;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @DisplayName("emailExists QUERY returns true for existing email")
-public class UserRepositoryTest {
+// given an existing email in the database,
+// method should report back that the email is taken already
+public class UserRepositoryParameterizedTest {
 
     @Autowired
     private UserRepository userRepository;
 
-    @Test
-    public void whenEmailExists_thenReturnTrue() {
-
+    @ParameterizedTest
+    @ValueSource(strings = {"test@test.com", "void@void.com"})
+    @DisplayName("Test emailExists method with different emails")
+    public void whenEmailExists_thenReturnTrue_elseFalse() {
         LocalDateTime localDateTime = LocalDateTime.now();
         // given a new user saved to an empty test database
         User user = new User();
-        user.setEmail("test@example.com");
-        user.setUsername("USER");
+        user.setEmail("test@test.com");
+        user.setUsername("TEST");
         user.setPassword("password");
         user.setDateCreated(localDateTime);
         user.setLastUpdated(localDateTime);
@@ -31,9 +37,11 @@ public class UserRepositoryTest {
 
         // Expect true from UserRepository Query.EMAIL_EXISTS
         // "SELECT COUNT(u) > 0 FROM User u WHERE LOWER(u.email) = LOWER(?1)"
-        assertEquals(true,
-                userRepository.emailExists("test@example.com"),
-                "emailExists() should return true"
-        );
+        if ("test@test.com".equals(user.getEmail())) {
+            assertTrue(userRepository.emailExists(user.getEmail()));
+        } else {
+            assertFalse(userRepository.emailExists(user.getEmail()));
+        }
+
     }
 }

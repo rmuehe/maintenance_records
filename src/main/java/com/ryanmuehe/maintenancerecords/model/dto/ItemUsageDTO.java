@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter // lombok package defines all getter methods
 @Setter // lombok package defines all setter methods
 
-// Validations or error messages to help store a new Maintenance Record
+// Validations or error messages to help store a new Item Usage
 public class ItemUsageDTO {
 
     private Long id; // needed for updating but not for saving a new ItemUsage

@@ -56,6 +56,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index/**", "/register", "/login/**", "/webjars/**", "/css/**", "/js/**", "/images/**").permitAll()
                         // Specifies access control for /home based on roles.
                         .requestMatchers("/items").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        // Restrict access to /users endpoint to only users with ROLE_ADMIN authority
+                        .requestMatchers("/users", "/items/user/**").hasAuthority("ROLE_ADMIN")
                         // Requires authentication for any other request.
                         .anyRequest().authenticated()
                 )
@@ -66,7 +68,13 @@ public class SecurityConfig {
                         .usernameParameter("username")
                         .passwordParameter("password")
 //                        .successForwardUrl("/home") // accepts a POST after login
-                        .defaultSuccessUrl("/items", true) // accepts a GET after login
+
+                        // This works when there's only ROLE_USERs
+//                        .defaultSuccessUrl("/items", true) // accepts a GET after login
+
+                        // Need this route to conditionally return the right page
+                        // Works with both ROLE_ADMIN and ROLE_USER
+                        .defaultSuccessUrl("/post-login", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -79,7 +87,6 @@ public class SecurityConfig {
                         .clearAuthentication(true) // remove User authentication
                         .permitAll()
                 );
-
         return http.build();
     }
 }

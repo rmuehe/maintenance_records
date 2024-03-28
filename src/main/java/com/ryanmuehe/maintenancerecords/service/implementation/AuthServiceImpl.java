@@ -30,11 +30,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     // checks if the current User is the owner of the current Item
-//    public boolean isOwner(Item item, Authentication authentication) {
-//        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-//        User currentUser = userService.findUserByEmail(userDetails.getUsername());
-//        return item.getOwner().equals(currentUser);
-//    }
     @Override
     public boolean isOwner(User owner, Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();

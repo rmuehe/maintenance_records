@@ -36,9 +36,24 @@ public class LoginController {
     @GetMapping("/login")
     // Display the login page
     public String login() {
-        // Just return the view name. Thymeleaf will access request parameters directly.
+        // Just return the view.
         return "login";
     }
+
+    @GetMapping("/post-login")
+    public String postLoginRedirect(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails != null) {
+            boolean isAdmin = userDetails.getAuthorities().stream()
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+            if (isAdmin) {
+                return "redirect:/users";
+            } else {
+                return "redirect:/items";
+            }
+        }
+        return "login"; // Redirect back to login if userDetails is null
+    }
+
 
     @GetMapping("/items")
     // Display the Items page after successful log in
