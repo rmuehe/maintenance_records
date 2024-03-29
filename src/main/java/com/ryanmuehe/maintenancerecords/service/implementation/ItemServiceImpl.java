@@ -9,6 +9,8 @@ import com.ryanmuehe.maintenancerecords.model.repository.ItemUsageRepository;
 import com.ryanmuehe.maintenancerecords.model.repository.MaintenanceRecordRepository;
 import com.ryanmuehe.maintenancerecords.service.ItemService;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,9 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final ItemUsageRepository itemUsageRepository;
     private final MaintenanceRecordRepository maintenanceRecordRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ItemServiceImpl.class);
+
+
 
     // Constructor dependency injection for ItemRepository
     @Autowired
@@ -64,17 +69,18 @@ public class ItemServiceImpl implements ItemService {
         // First, delete associated ItemUsages
         List<ItemUsage> itemUsages = itemUsageRepository.findByItemId(itemId);
         Item item = itemRepository.findById(itemId).orElseThrow(RuntimeException::new);
-        System.out.println("Deleted ItemUsages for Item ID: " + itemId + ", Item: " + item.getName());
-        System.out.println("Owned by: " + item.getOwner().getUsername());
+        logger.info("Deleted ItemUsages for Item ID: {}, Item: {}", itemId, item.getName());
+        logger.info("Owned by: {}", item.getOwner().getUsername());
+
         for (ItemUsage itemUsage : itemUsages) {
-            System.out.println("Item Usage Deleted: id = " + itemUsage.getId() + ", usedBy = " + itemUsage.getUsedBy());
+            logger.info("Item Usage Deleted: id = {}, usedBy = {}", itemUsage.getId(), itemUsage.getUsedBy());
         }
         itemUsageRepository.deleteAll(itemUsages);
 
         // then delete maintenance records
         List<MaintenanceRecord> maintenanceRecords = maintenanceRecordRepository.findByItemId(itemId);
-        System.out.println("Deleted MaintenanceRecords for Item ID: " + itemId + ", Item: " + item.getName());
-        System.out.println("Owned by: " + item.getOwner().getUsername());
+        logger.info("Deleted MaintenanceRecords for Item ID: {}, Item: {}", itemId, item.getName());
+        logger.info("Owned by: {}", item.getOwner().getUsername());
         for (MaintenanceRecord maintenanceRecord : maintenanceRecords) {
             System.out.println("Maintenance Record Deleted: id = " + maintenanceRecord.getId() +
                     ", usedBy = " + maintenanceRecord.getDescription());
@@ -83,7 +89,7 @@ public class ItemServiceImpl implements ItemService {
 
         // Then, delete the item itself
         itemRepository.deleteById(itemId);
-        System.out.println("Deleted Item with ID: " + itemId + ", Item: " + item.getName());
+        logger.info("Deleted Item with ID: {}, Item: {}", itemId, item.getName());
     }
 
 }

@@ -18,11 +18,37 @@ import org.springframework.stereotype.Service;
 //import com.ryanmuehe.maintenancerecords.configuration.SecurityConfig;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+//@Service
+//public class YourService {
+
+//    private static final Logger logger = LoggerFactory.getLogger(YourService.class);
+
+//    @Transactional
+//    public void processTransaction() {
+//        try {
+//            logger.info("Transaction started");
+//
+//            // Your transactional code here
+//
+//            logger.info("Transaction completed successfully");
+//        } catch (Exception e) {
+//            logger.error("Transaction failed due to an exception: {}", e.getMessage());
+//            // Re-throw if necessary or handle the exception
+//        }
+//    }
+//}
+
+
+
 
 /**
  * Implementation of the UserService interface for user management and authentication.
@@ -46,6 +72,9 @@ public class UserServiceImpl implements UserService {
 //    private final BCryptPasswordEncoder bcryptEncryption;
 
 
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+
     @Autowired // Dependency injection constructor (@Autowired optional)
     public UserServiceImpl(
             UserRepository userRepository,
@@ -59,29 +88,54 @@ public class UserServiceImpl implements UserService {
         this.itemService = itemService;
     }
 
-    // Loads the UserDetails required by Spring Security for authentication and authorization.
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println("Attempting to load USER: " + email);
-        System.out.println("Attempting to load USER with email: '" + email + "'");
+        logger.info("Attempting to load user by email: {}", email);
 
-        // Fetches user by email
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("USER not found with email: " + email));
+        try {
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        System.out.println("About to check for roles");
-        System.out.println("Fetching roles for user ID: " + user.getId());
+            List<Role> roles = roleAssignmentRepository.findRolesByUserId(user.getId());
+            logger.info("Roles fetched for user ID {}: {}", user.getId(), roles.stream().map(Role::getName).collect(Collectors.joining(", ")));
 
-        // Fetch roles for the user
-        List<Role> roles = roleAssignmentRepository.findRolesByUserId(user.getId());
-        System.out.println("Roles fetched: " + roles.stream().map(Role::getName).collect(Collectors.joining(", ")));
+            CustomUserDetails customUserDetails = new CustomUserDetails(user, roles);
+            logger.info("Created CustomUserDetails for email: {}", email);
+            return customUserDetails;
 
-        // Convert roles to GrantedAuthorities and create a CustomUserDetails object
-        CustomUserDetails customUserDetails = new CustomUserDetails(user, roles);
-        System.out.println("Creating CustomUserDetails for: " + customUserDetails.getUsername());
-        System.out.println("Authorities (Roles): " + customUserDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(", ")));
-        return customUserDetails;
+        } catch (UsernameNotFoundException e) {
+            logger.error("Error loading user by email {}: {}", email, e.getMessage());
+            throw e; // Rethrowing the exception to be handled further up the stack
+        }
     }
+
+
+
+
+
+//    // Loads the UserDetails required by Spring Security for authentication and authorization.
+//    @Override
+//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        System.out.println("Attempting to load USER: " + email);
+//        System.out.println("Attempting to load USER with email: '" + email + "'");
+//
+//        // Fetches user by email
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException("USER not found with email: " + email));
+//
+//        System.out.println("About to check for roles");
+//        System.out.println("Fetching roles for user ID: " + user.getId());
+//
+//        // Fetch roles for the user
+//        List<Role> roles = roleAssignmentRepository.findRolesByUserId(user.getId());
+//        System.out.println("Roles fetched: " + roles.stream().map(Role::getName).collect(Collectors.joining(", ")));
+//
+//        // Convert roles to GrantedAuthorities and create a CustomUserDetails object
+//        CustomUserDetails customUserDetails = new CustomUserDetails(user, roles);
+//        System.out.println("Creating CustomUserDetails for: " + customUserDetails.getUsername());
+//        System.out.println("Authorities (Roles): " + customUserDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(", ")));
+//        return customUserDetails;
+//    }
 
     // Helper method to convert roles to GrantedAuthorities
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
@@ -140,9 +194,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateUser(UserDTO userDTO) throws Exception {
         User user = userRepository.findById(userDTO.getId())
-                .orElseThrow(() -> new Exception("User not found for ID " + userDTO.getId()));
-        System.out.println("Updating user:" + user.toString());
-
+                .orElseThrow(() -> new UsernameNotFoundException("User not found for ID " + userDTO.getId()));
+//        System.out.println("Updating user:" + user.toString());
+        logger.info("Updating user: {}", user);
         user.setEmail(userDTO.getEmail());
         user.setUsername(userDTO.getUsername());
 
@@ -151,7 +205,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         // save the user
-        System.out.println("Updated user:" + user.toString());
+//        System.out.println("Updated user:" + user.toString());
+        logger.info("Updated user: {}", user);
         userRepository.save(user);
 
         // Assign selected roles
@@ -166,14 +221,14 @@ public class UserServiceImpl implements UserService {
         // and changes them all to either Admin or User -- this should be updated in the future.
         List<RoleAssignment> roleAssignments = roleAssignmentRepository.findByUserId(user.getId());
         for (RoleAssignment assignment : roleAssignments) {
-            System.out.println("Updating RoleAssignment from " + assignment.toString());
-
+//            System.out.println("Updating RoleAssignment from " + assignment.toString());
+            logger.info("Updating RoleAssignment From {} : {}", assignment.getUser(), assignment.getRole());
             assignment.setUser(user);
             assignment.setRole(role);
             System.out.print("To " + assignment.toString());
+            logger.info(" Updating RoleAssignment TO {} : {}", assignment.getUser(), assignment.getRole());
             roleAssignmentRepository.save(assignment);
         }
-
     }
 
     // TODO: update Delete User method with disabling logic
@@ -191,7 +246,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
         userRepository.delete(user);
-        System.out.println("Deleted User with ID: " + userId + " and all related items and records.");
+        logger.info("Deleted User with ID: {} and all related items and records.", userId);
     }
 
 

@@ -1,15 +1,15 @@
 package com.ryanmuehe.maintenancerecords.controller;
 
-import com.ryanmuehe.maintenancerecords.model.Item;
-import com.ryanmuehe.maintenancerecords.model.ItemUsage;
-import com.ryanmuehe.maintenancerecords.model.Role;
-import com.ryanmuehe.maintenancerecords.model.User;
+import com.ryanmuehe.maintenancerecords.configuration.LogChangeConfig;
+import com.ryanmuehe.maintenancerecords.model.*;
 import com.ryanmuehe.maintenancerecords.model.dto.UserDTO;
 import com.ryanmuehe.maintenancerecords.model.repository.RoleRepository;
 import com.ryanmuehe.maintenancerecords.service.ItemService;
 import com.ryanmuehe.maintenancerecords.service.UserService;
 import com.ryanmuehe.maintenancerecords.service.implementation.AuthServiceImpl;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -32,13 +32,17 @@ public class AdminController {
     private final ItemService itemService;
     private final RoleRepository roleRepository;
     private final AuthServiceImpl authService;
+    private final LogChangeConfig logChangeConfig;
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+
 
     @Autowired
-    public AdminController(UserService userService, ItemService itemService, RoleRepository roleRepository, AuthServiceImpl authService) {
+    public AdminController(UserService userService, ItemService itemService, RoleRepository roleRepository, AuthServiceImpl authService, LogChangeConfig logChangeConfig) {
         this.userService = userService;
         this.itemService = itemService;
         this.roleRepository = roleRepository;
         this.authService = authService;
+        this.logChangeConfig = logChangeConfig;
     }
 
     // retrieves a page listing all users if logged in as an Admin
@@ -49,6 +53,26 @@ public class AdminController {
         model.addAttribute("users", users); // Add users to the model
         return "users";
     }
+
+    // changes the Log Level through dropdown selections on the users page
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/change-log-level")
+    public String changeLogLevel(@ModelAttribute("formData") FormData formData,
+                                 Model model) {
+        // Logic to change log level based on formData.getLogPackage() and formData.getLogLevel()
+
+        // Show a message that log level was changed
+        model.addAttribute("message", "Log level changed successfully to " + formData.getLogLevel() + " for " + formData.getLogPackage());
+        logger.info("Log level updated to {} for {}", formData.getLogLevel(), formData.getLogPackage());
+        logChangeConfig.changeLogLevel(formData.getLogPackage(), formData.getLogLevel());
+
+        // show the users page again with the confirmation message
+        List<User> users = userService.findAll(); // Fetch all users
+        model.addAttribute("users", users); // Add users to the model
+        return "users";
+    }
+
+
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/items/user/{userId}")
@@ -102,14 +126,15 @@ public class AdminController {
         try {
             userService.addUser(userDTO);
 
-            System.out.println("User added successfully by Admin");
+            logger.info("User added successfully by Admin");
 
             redirectAttributes.addFlashAttribute("updateSuccess", "User added successfully.");
         } catch (Exception e) {
 
-            System.out.println("User not added by Admin");
-            System.out.println(userDTO.toString());
-            System.out.println(e.getMessage());
+
+            logger.warn("User not added by Admin. Details: {}", userDTO);
+            logger.error("Error message: {}", e.getMessage());
+
 
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/users/add";
@@ -130,7 +155,7 @@ public class AdminController {
             Authentication authentication,
             Model model) {
 
-        System.out.println("Admin: Starting to edit user with ID " + id);
+        logger.info("Admin: Starting to edit user with ID {}", id);
 
         User user = new User();
         // Fetch user and roles
@@ -144,7 +169,7 @@ public class AdminController {
         List<Role> roles = roleRepository.findAll();
 
         if (user == null) {
-            System.out.println("Admin: User not found for ID " + id);
+            logger.warn("Admin: User not found for ID {}", id);
             // redirect attributes to show error
             return "redirect:/users?error=UserNotFound";
         }
@@ -168,7 +193,7 @@ public class AdminController {
         userDTO.setUsername(user.getUsername());
         userDTO.setRoleId(roleId);
 
-        System.out.println("Admin: Editing User - " + user.getUsername());
+        logger.info("Admin: Editing User - {}", user.getUsername());
 
         model.addAttribute("userDTO", userDTO);
         model.addAttribute("roles", roles);
@@ -183,11 +208,11 @@ public class AdminController {
             BindingResult result,
             RedirectAttributes redirectAttributes) {
 
-        System.out.println("Admin: Attempting to update user with ID " + userDTO.getId());
+        logger.info("Admin: Attempting to update user with ID {}", userDTO.getId());
 
         // Validate form data
         if (result.hasErrors()) {
-            System.out.println("Admin: Errors found during user update.");
+            logger.error("Admin: Errors found during user update.");
             result.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
 //            return "edit_user"; // Return to the edit form if errors exist
             redirectAttributes.addFlashAttribute("updateError", "Error updating user form");
@@ -200,7 +225,7 @@ public class AdminController {
             userService.updateUser(userDTO);
             redirectAttributes.addFlashAttribute("updateSuccess", "User updated successfully.");
         } catch (Exception e) {
-            System.out.println("Admin: Error updating user - " + e.getMessage());
+            logger.error("Admin: Error updating user - {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Error updating user.");
             return "redirect:/users/edit/" + userDTO.getId(); // Redirect back to the edit form in case of error
         }

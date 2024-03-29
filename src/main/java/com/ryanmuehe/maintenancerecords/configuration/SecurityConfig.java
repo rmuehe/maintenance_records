@@ -53,7 +53,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         // Specifies public access to certain URLs
-                        .requestMatchers("/", "/index/**", "/register", "/login/**", "/webjars/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/index/**", "/register", "/login/**",
+                                "/webjars/**", "/css/**", "/js/**", "/images/**",
+                                "/actuator/**").permitAll()
                         // Specifies access control for /home based on roles.
                         .requestMatchers("/items").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         // Restrict access to /users endpoint to only users with ROLE_ADMIN authority
