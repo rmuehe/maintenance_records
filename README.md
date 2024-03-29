@@ -23,11 +23,46 @@ cd maintenancerecords
 **Configure MySQL (for production):**
    Update `src/main/resources/application.properties` with your MySQL user and password:
    ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/maintenance_records
-   spring.datasource.username=<your_username>
-   spring.datasource.password=<your_password>
-   spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-   spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+  spring.application.name=maintenancerecords
+server.port=8080
+
+spring.datasource.url=jdbc:mysql://localhost:3306/maintenance_records
+spring.datasource.username=username
+spring.datasource.password=password
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.properties.hibernate.format_sql=true
+
+
+# loggers endpoint of Spring Actuator exposed
+#management.endpoints.web.exposure.include=loggers
+#management.endpoints.web.exposure.include=health,info,loggers
+management.endpoints.web.exposure.include=*
+
+# requires
+#			<groupId>org.springframework.boot</groupId>
+#			<artifactId>spring-boot-starter-actuator</artifactId>
+#
+
+# LOGGING
+# Change logging level here to TRACE, DEBUG, INFO, WARN, ERROR
+#Console logging
+#logging.level.root=INFO
+
+#logs print to resources/log/app.log
+logging.file.name=log/appl.log
+logging.file.path=logs
+# FFile styles
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+#logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{1.} - %msg%n
+
+# Log Console Styles
+spring.output.ansi.enabled=always
+logging.pattern.console=%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr([%5p]){magenta} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx
+
    ```
 Ensure the empty database `maintenance_records` exists in your MySQL server.
 
